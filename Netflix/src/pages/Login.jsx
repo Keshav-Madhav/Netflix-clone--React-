@@ -1,7 +1,28 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { UserAuth } from '../context/AuthContext';
 
 const Login = () => {
+    const [ email, setEmail ] = useState('');
+    const [ password, setPassword ] = useState('');
+    const [ error, setError ] = useState('');
+    const { user, logIn } = UserAuth();
+    const navigate = useNavigate();
+
+    const submit = async (e)=>{
+        e.preventDefault();
+        setError('');
+        try{
+            await logIn(email, password);
+            navigate('/')
+        }
+        catch (error){
+            console.log(error);
+            setError(error.message);
+        }
+    };
+
+
     return (
         <div className='w-full h-screen '>
             <img className='hidden sm:block absolute w-full h-full object-cover' src="https://assets.nflxext.com/ffe/siteui/vlv3/b85863b0-0609-4dba-8fe8-d0370b25b9ee/fdf508c8-97d0-42fd-a6f9-9bef6bf96934/IN-en-20230731-popsignuptwoweeks-perspective_alpha_website_small.jpg" alt="/" />
@@ -10,9 +31,10 @@ const Login = () => {
                 <div className='max-w-[450px] h-[600px] mx-auto bg-black/75 text-white'>
                     <div className='max-w-[320px] mx-auto py-16'>
                         <h1 className='text-3xl font-bold'>Sign In</h1>
-                        <form className='w-full flex flex-col'>
-                            <input className='p-3 my-2 bg-gray-700 rounded ' type="email" placeholder='Email' autoComplete='email'/>
-                            <input className='p-3 my-2 bg-gray-700 rounded ' type="password"placeholder='Password' autoComplete='current-password'/>
+                        {error ? <p className='px-3 py-2 bg-red-400 my-2 rounded'>{error}</p> : null}
+                        <form onSubmit={submit} className='w-full flex flex-col'>
+                            <input onChange={(e) => setEmail(e.target.value)} className='p-3 my-2 bg-gray-700 rounded ' type="email" placeholder='Email' autoComplete='email'/>
+                            <input onChange={(e) => setPassword(e.target.value)} className='p-3 my-2 bg-gray-700 rounded ' type="password"placeholder='Password' autoComplete='current-password'/>
 
                             <button className='bg-red-600 py-3 my-6 rounded font-bpld'>Sign In</button>
 
